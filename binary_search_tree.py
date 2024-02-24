@@ -169,91 +169,55 @@ class BinarySearchTree:
 
         self.root = rotate(self.root)
 
+    def bfs(start, end):
+        """
+        Find the shortest path from start to end in a graph.
 
-def bfs(start, end):
-    """
-    Find the shortest path from start to end in a graph.
+        Args:
+            start (str): The starting node.
+            end (str): The ending node.
 
-    Args:
-        start (str): The starting node.
-        end (str): The ending node.
+        Returns:
+            list: The shortest path from start to end.
+        """
+        rooms = {
+            'A': ['B', 'C'],
+            'B': ['A', 'D'],
+            'C': ['A', 'E'],
+            'D': ['B'],
+            'E': ['C', 'F'],
+            'F': ['E']
+        }
+        queue = deque([(start, [start])])
+        visited = set()
 
-    Returns:
-        list: The shortest path from start to end.
-    """
-    rooms = {
-        'A': ['B', 'C'],
-        'B': ['A', 'D'],
-        'C': ['A', 'E'],
-        'D': ['B'],
-        'E': ['C', 'F'],
-        'F': ['E']
-    }
-    queue = deque([(start, [start])])
-    visited = set()
+        while queue:
+            current, path = queue.popleft()
 
-    while queue:
-        current, path = queue.popleft()
+            if current == end:
+                return path
 
-        if current == end:
-            return path
+            if current not in visited:
+                visited.add(current)
+                for neighbor in rooms[current]:
+                    if neighbor not in visited:
+                        queue.append((neighbor, path + [neighbor]))
 
-        if current not in visited:
-            visited.add(current)
-            for neighbor in rooms[current]:
-                if neighbor not in visited:
-                    queue.append((neighbor, path + [neighbor]))
+    def dfs(self, graph, node, visited=[]):
+        """
+        Perform Depth-First Search (DFS) traversal on a graph.
 
+        Args:
+            graph (dict): The graph represented as an adjacency list.
+            node (str): The starting node for DFS.
+            visited (list, optional): A list to track visited nodes. Defaults to [].
 
-def dfs(graph, node, visited=[]):
-    """
-    Perform Depth-First Search (DFS) traversal on a graph.
+        Returns:
+            list: The visited nodes in DFS order.
+        """
+        if node not in visited:
+            visited.append(node)
+            for neighbor in graph[node]:
+                self.dfs(graph, neighbor, visited)
 
-    Args:
-        graph (dict): The graph represented as an adjacency list.
-        node (str): The starting node for DFS.
-        visited (list, optional): A list to track visited nodes. Defaults to [].
-
-    Returns:
-        list: The visited nodes in DFS order.
-    """
-    if node not in visited:
-        visited.append(node)
-        for neighbor in graph[node]:
-            dfs(graph, neighbor, visited)
-
-    return visited
-
-
-if __name__ == "__main__":
-    # Example usage of BinarySearchTree
-    bst = BinarySearchTree()
-    keys = [5, 3, 7, 1, 4, 6, 8]
-    for key in keys:
-        success = bst.insert(key)
-        if success:
-            print(f"Insertion of {key} successful.")
-        else:
-            print(f"Insertion of {key} failed. Key already exists.")
-
-    print("\nPerforming inorder traversal of the Binary Search Tree...")
-    print("Inorder Traversal:", bst.inorder_traversal())
-
-    # Example usage of shortest_path
-    start_room = 'A'
-    end_room = 'F'
-    print("\nShortest path from room", start_room, "to room",
-          end_room, ":", bfs(start_room, end_room))
-
-    # Example usage of dfs
-    graph = {
-        'A': ['B', 'C'],
-        'B': ['D', 'E'],
-        'C': ['F'],
-        'D': [],
-        'E': ['F'],
-        'F': []
-    }
-    start_node = 'A'
-    print("\nDFS traversal starting from node",
-          start_node, ":", dfs(graph, start_node))
+        return visited
